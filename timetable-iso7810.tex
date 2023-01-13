@@ -1,0 +1,146 @@
+\documentclass[11pt, paper=a4]{scrartcl}
+\usepackage[most]{tcolorbox}
+\usepackage{fp}
+\usepackage{times}
+
+\pagestyle{empty}
+
+% format of the resulting card
+\newcommand{\theight}{53.98}
+\newcommand{\twidth}{85.60}
+% how many timeslots there are
+\newcommand{\timeslots}{5}
+% weekday names
+\newcommand{\weekdays}{Mo,Tu,We,Th,Fr}
+% should be in relation to each other
+\newcommand{\timeslotwidth}{2}
+\newcommand{\otherswidth}{4}
+% should be in relation to each other
+\newcommand{\weekdayheight}{2}
+\newcommand{\othersheight}{4}
+
+% change how course name is displayed
+\newcommand{\course}[1]{\footnotesize#1}
+% change how course room is displayed
+\newcommand{\room}[1]{\tiny\ttfamily#1}
+
+\FPeval{\qwer}{\theight/(\timeslots*\othersheight+\weekdayheight)}
+
+\newtcolorbox{outerbox}{
+    colback=white,
+    enhanced,
+    height=\theight mm,
+    width=\twidth mm,
+    size=minimal,
+    colframe=white,
+    arc=1in/8,
+    outer arc=1in/8,
+    borderline={-.1mm}{0mm}{black,dashed},
+    boxsep=0.5mm,
+    % the raster
+    finish={
+        \begin{scope}[shift={(frame.north west)}]
+            % horizontal lines
+            \draw (0,-\fpeval{\qwer*\weekdayheight} mm) -- (\twidth mm,-\fpeval{\qwer*\weekdayheight} mm);
+            \foreach \num in {0,...,\fpeval{\timeslots-1}}{
+                \draw (0,-\fpeval{\qwer*\weekdayheight+\num(\qwer*\othersheight)} mm) -- (\twidth mm,-\fpeval{\qwer*\weekdayheight+\num(\qwer*\othersheight)} mm);
+            }
+            %vertical lines
+            \draw (\fpeval{\twidth/(5*\otherswidth+\timeslotwidth)*\timeslotwidth}mm,0) -- (\fpeval{\twidth/(5*\otherswidth+\timeslotwidth)*\timeslotwidth}mm,-\theight mm);
+            \foreach \num in {0,...,4}{
+                \draw (\fpeval{\twidth/(5*\otherswidth+\timeslotwidth)*(\timeslotwidth+\num*\otherswidth)}mm,0) -- (\fpeval{\twidth/(5*\otherswidth+\timeslotwidth)*(\timeslotwidth+\num*\otherswidth)}mm,-\theight mm);
+            }
+        \end{scope}
+    }
+}
+
+\newtcbox{\weekdaybox}{
+    colback=white,
+    height=\fpeval{\qwer*\weekdayheight} mm,
+    size=small,
+    halign=center,
+    valign=center,
+    raster multicolumn=\otherswidth,
+    boxrule=0mm,
+    colframe=white,
+    fontupper=\bfseries
+}
+
+\newtcbox{\timeslotbox}{
+    colback=white,
+    height=\fpeval{\qwer*\othersheight-.2} mm,
+    size=small,
+    halign=center,
+    valign=center,
+    raster multicolumn=\timeslotwidth,
+    boxrule=0mm,
+    colframe=white,
+    fontupper=\bfseries
+}
+
+\newtcbox{\otherbox}{
+    colback=white,
+    height=\fpeval{\qwer*\othersheight-.2} mm,
+    size=small,
+    raster multicolumn=\otherswidth,
+    boxrule=0mm,
+    colframe=white
+}
+
+\begin{document}
+    \begin{outerbox}
+        \begin{tcbraster}[
+            raster columns=\fpeval{\otherswidth*5+\timeslotwidth},
+            raster row skip=0mm,
+            raster column skip=0mm
+        ]
+            \tcbox[
+                colback=white,
+                height=\fpeval{\qwer*\weekdayheight} mm,
+                size=small,
+                boxrule=.5mm,
+                raster multicolumn=\timeslotwidth,
+                boxrule=0mm,
+                colframe=white
+            ]{}
+            \foreach \weekday in \weekdays{\weekdaybox{\weekday}}
+
+            % FIELDS START
+            \timeslotbox{8}
+            \otherbox{} % Monday
+            \otherbox{\course{Alg I}\\\room{101A}} % Tuesday
+            \otherbox{} % Wednesday
+            \otherbox{} % Thursday
+            \otherbox{} % Friday
+
+            \timeslotbox{10}
+            \otherbox{\course{Calc I}\\\room{106C}} % Monday
+            \otherbox{\course{Chem}\\\room{101B}} % Tuesday
+            \otherbox{} % Wednesday
+            \otherbox{\course{Alg I}\\\room{101A}} % Thursday
+            \otherbox{\course{PE}} % Friday
+
+            \timeslotbox{12}
+            \otherbox{\course{En III}\\\room{101A}} % Monday
+            \otherbox{} % Tuesday
+            \otherbox{\course{En III}\\\room{101A}} % Wednesday
+            \otherbox{\course{Chem}\\\room{101B}} % Thursday
+            \otherbox{} % Friday
+
+            \timeslotbox{14}
+            \otherbox{} % Monday
+            \otherbox{} % Tuesday
+            \otherbox{} % Wednesday
+            \otherbox{} % Thursday
+            \otherbox{\course{Calc I}\\\room{106C}} % Friday
+
+            \timeslotbox{16}
+            \otherbox{\course{Soc 101}\\\room{206A}} % Monday
+            \otherbox{} % Tuesday
+            \otherbox{} % Wednesday
+            \otherbox{} % Thursday
+            \otherbox{} % Friday
+            % FIELDS STOP
+        \end{tcbraster}
+    \end{outerbox}
+\end{document}
